@@ -38,7 +38,7 @@ def build_apk():
     # 复制 buildozer.spec 文件
     shutil.copy('buildozer.spec', project_dir)
 
-    # 使用 Docker 构建 APK
+    # 进入项目目录并运行 Docker 构建
     try:
         logging.info('Starting Docker build for APK...')
         result = subprocess.run(
@@ -50,7 +50,7 @@ def build_apk():
         logging.info('Docker build completed successfully!')
         logging.info(result.stdout)  # 记录输出信息
 
-        # 假设 APK 会被保存到 project_dir/bin/ 目录中
+        # APK 文件的预期路径
         apk_file = os.path.join(project_dir, 'bin', f"{file.filename.split('.')[0]}-0.1-debug.apk")
         if os.path.exists(apk_file):
             return jsonify({'success': 'APK built successfully!', 'apk_url': f'/download/{file.filename.split(".")[0]}-0.1-debug.apk'}), 200
@@ -59,8 +59,9 @@ def build_apk():
             return jsonify({'error': 'APK file not found!'}), 500
     except subprocess.CalledProcessError as e:
         logging.error(f'Error during Docker build: {str(e)}')
-        logging.error(e.output)  # 记录错误信息
-        return jsonify({'error': 'Failed to build APK', 'details': str(e)}), 500
+        logging.error('STDOUT: ' + e.stdout)
+        logging.error('STDERR: ' + e.stderr)  # 记录错误输出
+        return jsonify({'error': 'Failed to build APK', 'details': e.stderr}), 500
     finally:
         # 清理临时文件
         shutil.rmtree(project_dir)
