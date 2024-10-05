@@ -26,15 +26,16 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # 复制应用程序代码
 COPY app.py .
 COPY buildozer.spec .
-COPY logs/ ./logs/
 
 # 安装 Buildozer 及其依赖项
 RUN pip3 install --no-cache-dir buildozer
 
 # 为 Buildozer 准备环境
+# 使用无交互模式运行 Buildozer 初始化和更新
 RUN buildozer init && \
-    buildozer android update && \
-    buildozer android clean
+    echo "android { }" >> buildozer.spec && \
+    buildozer -v android update && \
+    buildozer -v android clean
 
 # 设置环境变量
 ENV PATH="/root/.local/bin:${PATH}"
