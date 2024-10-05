@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
     python3-setuptools \
     python3-dev \
     openjdk-8-jdk \
-    docker.io \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
@@ -24,13 +23,19 @@ COPY requirements.txt .
 # 安装依赖
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 复制应用程序代码和 Dockerfile
+# 复制应用程序代码
 COPY app.py .
 COPY buildozer.spec .
-COPY Dockerfile .
 
 # 安装 Buildozer 及其依赖项
 RUN pip3 install --no-cache-dir buildozer
+
+# 为 Buildozer 准备环境
+# 使用无交互模式运行 Buildozer 初始化和更新
+RUN buildozer init && \
+    echo "android { }" >> buildozer.spec && \
+    buildozer -v android update && \
+    buildozer -v android clean
 
 # 设置环境变量
 ENV PATH="/root/.local/bin:${PATH}"
