@@ -15,6 +15,25 @@ if not os.path.exists('logs'):
 logging.basicConfig(filename='logs/build.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
+def create_buildozer_spec(project_dir, filename):
+    """生成 buildozer.spec 文件"""
+    spec_content = f"""
+[app]
+title = {filename.split('.')[0]}
+package.name = {filename.split('.')[0]}
+package.domain = org.example
+source.dir = .
+version = 0.1
+requirements = python3,kivy
+# (其他配置项可以根据需要添加)
+
+[buildozer]
+log_level = 2
+"""
+    with open(os.path.join(project_dir, 'buildozer.spec'), 'w') as f:
+        f.write(spec_content.strip())
+    logging.info('Created buildozer.spec file.')
+
 @app.route('/build', methods=['POST'])
 def build_apk():
     if 'file' not in request.files:
@@ -35,8 +54,8 @@ def build_apk():
     file.save(file_path)
     logging.info(f'Saved file {file.filename} to {project_dir}')
 
-    # 复制 buildozer.spec 文件
-    shutil.copy('buildozer.spec', project_dir)
+    # 创建并保存 buildozer.spec 文件
+    create_buildozer_spec(project_dir, file.filename)
 
     # 进入项目目录并运行 Buildozer
     os.chdir(project_dir)
@@ -71,4 +90,4 @@ def download_apk(apk_filename):
         return jsonify({'error': 'APK file not found!'}), 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000,debug=True)
+    app.run(host='0.0.0.0', port=10000, debug=True)
