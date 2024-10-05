@@ -61,7 +61,7 @@ def build_apk():
     os.chdir(project_dir)
     try:
         logging.info('Starting Buildozer...')
-        # 在这里添加 --force 选项
+        # 加上 --force 参数来避免需要交互式确认
         result = subprocess.run(['buildozer', 'android', 'debug', '--force'], check=True, capture_output=True, text=True)
         logging.info('Build completed successfully!')
         logging.info(result.stdout)  # 记录输出信息
