@@ -38,6 +38,9 @@ def build_apk():
     # 复制 buildozer.spec 文件
     shutil.copy('buildozer.spec', project_dir)
 
+    # 复制 Dockerfile 文件到临时项目目录
+    shutil.copy('Dockerfile', project_dir)
+
     # 进入项目目录并运行 Docker 构建
     try:
         logging.info('Starting Docker build for APK...')
