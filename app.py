@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -74,8 +74,9 @@ def build_apk():
             return jsonify({'error': 'APK file not found!'}), 500
     except subprocess.CalledProcessError as e:
         logging.error(f'Error during build: {str(e)}')
-        logging.error(e.output)  # 记录错误信息
-        return jsonify({'error': 'Failed to build APK', 'details': str(e)}), 500
+        logging.error('stdout: ' + e.stdout)  # 记录标准输出
+        logging.error('stderr: ' + e.stderr)  # 记录标准错误
+        return jsonify({'error': 'Failed to build APK', 'details': str(e), 'stdout': e.stdout, 'stderr': e.stderr}), 500
     finally:
         # 清理临时文件
         shutil.rmtree(project_dir)
@@ -88,6 +89,15 @@ def download_apk(apk_filename):
         return jsonify({'apk_url': f'http://your_render_service_url/downloads/{apk_filename}'}), 200
     else:
         return jsonify({'error': 'APK file not found!'}), 404
+
+@app.route('/admin/logs', methods=['GET'])
+def view_logs():
+    """查看日志文件"""
+    log_file_path = 'logs/build.log'
+    if os.path.exists(log_file_path):
+        return send_file(log_file_path, as_attachment=False, mimetype='text/plain')
+    else:
+        return jsonify({'error': 'Log file not found!'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000, debug=True)
