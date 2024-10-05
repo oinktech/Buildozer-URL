@@ -31,6 +31,11 @@ COPY logs/ ./logs/
 # 安装 Buildozer 及其依赖项
 RUN pip3 install --no-cache-dir buildozer
 
+# 为 Buildozer 准备环境
+RUN buildozer init && \
+    buildozer android update && \
+    buildozer android clean
+
 # 设置环境变量
 ENV PATH="/root/.local/bin:${PATH}"
 
