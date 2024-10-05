@@ -1,7 +1,7 @@
 [app]
-title = YourAppName
-package.name = yourappname
-package.domain = org.example
+title = Buildozer-URL
+package.name = Buildozer-URL
+package.domain = https://buildozer-url.onrender.com
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,zip,html
 version = 0.1
