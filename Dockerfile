@@ -24,9 +24,10 @@ COPY requirements.txt .
 # 安装依赖
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 复制应用程序代码
+# 复制应用程序代码和 Dockerfile
 COPY app.py .
 COPY buildozer.spec .
+COPY Dockerfile .
 
 # 安装 Buildozer 及其依赖项
 RUN pip3 install --no-cache-dir buildozer
